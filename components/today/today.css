@@ -1,0 +1,376 @@
+.today-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.today-date-navigation {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 10px;
+}
+
+.today-date-navigation time {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.today-date-navigation time strong {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: var(--weight-semibold);
+  line-height: 1.05;
+}
+
+.today-date-navigation time span {
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  font-size: 13px;
+}
+
+.today-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.nutrition-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 10px;
+}
+
+.nutrition-card > span:first-child,
+.nutrition-target {
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.nutrition-card strong {
+  overflow-wrap: anywhere;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.nutrition-card small {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--weight-regular);
+}
+
+.nutrition-card progress {
+  width: 100%;
+  height: 4px;
+  border: 0;
+  background: var(--color-surface);
+}
+
+.nutrition-card progress::-webkit-progress-bar { background: var(--color-surface); }
+.nutrition-card progress::-webkit-progress-value { background: var(--color-accent); }
+.nutrition-card progress::-moz-progress-bar { background: var(--color-accent); }
+
+.checklist-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.checklist-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.checklist-card-header h2 {
+  margin-top: 3px;
+  font-size: 21px;
+}
+
+.checklist-empty,
+.today-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px 14px;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+}
+
+.checklist-list,
+.checklist-management-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.checklist-row {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px 7px 14px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.checklist-row:last-child { border-bottom: 0; }
+
+.checklist-row > label {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checklist-row input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checklist-mark {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-text) 45%, transparent);
+  color: var(--color-heat-strong-text);
+  font-weight: var(--weight-bold);
+}
+
+.checklist-row input:focus-visible + .checklist-mark {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.checklist-row-complete .checklist-mark {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.checklist-row-complete .checklist-copy strong {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.checklist-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.checklist-copy strong { overflow-wrap: anywhere; }
+
+.checklist-copy > span {
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  font-size: 12px;
+}
+
+.checklist-row > a {
+  color: var(--color-accent-700);
+  font-size: 12px;
+}
+
+.checklist-row .button-ghost {
+  min-height: 36px;
+  padding-inline: 8px;
+  font-size: 14px;
+}
+
+.checklist-management-list {
+  border-top: 1px solid var(--color-divider);
+}
+
+.checklist-management-list li {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-block: 7px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.checklist-management-list li > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.checklist-management-list span,
+.checklist-sheet-empty {
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+  font-size: 12px;
+}
+
+.checklist-editor-actions { flex-wrap: wrap; }
+.checklist-editor-actions .danger-action { margin-right: auto; }
+
+.meal-card,
+.food-group,
+.activity-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-card-header,
+.food-group > header,
+.activity-group > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.meal-card-header h2,
+.food-group h2,
+.activity-group h2 { font-size: 21px; }
+
+.meal-empty,
+.library-empty,
+.food-group > p,
+.activity-group > p {
+  padding: 14px;
+  margin: 0;
+  color: color-mix(in srgb, var(--color-text) 65%, transparent);
+}
+
+.meal-list,
+.meal-draft-items,
+.food-list,
+.activity-list,
+.exercise-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.meal-list li + li,
+.meal-draft-items li + li,
+.food-list li + li,
+.activity-list li + li,
+.exercise-list li + li { border-top: 1px solid var(--color-divider); }
+
+.meal-list button,
+.food-list button,
+.activity-copy-button {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.meal-list time,
+.meal-list span,
+.food-list span,
+.food-group header span,
+.activity-list span,
+.activity-group header span,
+.exercise-list span {
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+  font-size: 12px;
+}
+
+.meal-total {
+  margin-block: 8px 14px;
+  color: var(--color-accent-700);
+  font-weight: var(--weight-semibold);
+}
+
+.meal-draft-items { border-block: 1px solid var(--color-divider); }
+.meal-draft-items > li { padding: 10px 0; }
+.meal-item-heading { display: flex; justify-content: space-between; gap: 10px; }
+.meal-quantity-controls { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.meal-item-quantity { min-width: 28px; text-align: center; font-weight: var(--weight-semibold); }
+.meal-custom-fields,
+.food-nutrition-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.meal-custom-fields .check-label { grid-column: 1 / -1; }
+.meal-search-results { max-height: 180px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
+.meal-search-results .button { justify-content: flex-start; text-align: left; }
+
+.food-library,
+.activity-library { display: flex; flex-direction: column; gap: 14px; }
+.library-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 8px; }
+.library-toolbar .field { margin: 0; }
+.food-group > header > div,
+.activity-group > header > div { display: flex; align-items: baseline; gap: 8px; }
+.food-group > header > div:last-child,
+.activity-group > header > div:last-child { margin-left: auto; }
+.food-group > header .button,
+.activity-group > header .button { min-height: 34px; padding-inline: 8px; }
+.food-list li,
+.activity-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; }
+.food-list a,
+.activity-list a { padding: 10px; color: var(--color-accent-700); font-size: 12px; }
+
+.exercise-card { display: flex; flex-direction: column; }
+.exercise-chips { display: flex; gap: 6px; padding: 10px 14px; overflow-x: auto; border-bottom: 1px solid var(--color-divider); }
+.exercise-chips .button { flex: 0 0 auto; min-height: 36px; padding-inline: 10px; }
+.exercise-entry { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 8px; padding: 12px 14px; }
+.exercise-entry .field { margin: 0; }
+.exercise-entry .check-label { grid-column: 1 / -1; }
+.exercise-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 8px 10px 8px 14px; }
+.exercise-list li > div { min-width: 0; display: flex; flex-direction: column; }
+.exercise-list .button { min-height: 34px; padding-inline: 8px; font-size: 12px; }
+
+.grocery-card { display: flex; flex-direction: column; margin-top: 14px; }
+.grocery-header,
+.grocery-add,
+.grocery-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.grocery-header { padding: 12px 14px; border-bottom: 1px solid var(--color-divider); }
+.grocery-header h2,
+.grocery-header p { margin: 0; }
+.grocery-header p,
+.grocery-list small { display: block; color: color-mix(in srgb, var(--color-text) 62%, transparent); font-size: 12px; }
+.grocery-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; }
+.grocery-add { padding: 12px 14px; }
+.grocery-add .field { flex: 1; margin: 0; }
+.grocery-list { margin: 0; padding: 0 14px; list-style: none; }
+.grocery-list li { min-height: 54px; border-top: 1px solid var(--color-divider); }
+.grocery-list label { display: flex; flex: 1; align-items: center; gap: 10px; }
+.grocery-list input[type="checkbox"] { width: 20px; height: 20px; }
+.grocery-list .is-complete strong { text-decoration: line-through; }
+.grocery-list a { padding: 10px 4px; color: var(--color-accent-700); font-size: 12px; }
+
+.image-field { display: grid; gap: var(--space-2); }
+.image-field > img,
+.entity-thumbnail { border: 1px solid var(--color-divider); border-radius: 8px; object-fit: cover; }
+.image-field > img { width: min(100%, 18rem); aspect-ratio: 16 / 10; }
+.entity-thumbnail { width: 44px; height: 44px; float: left; margin-right: 8px; }
+.meal-thumbnail { width: 72px; height: 72px; border: 1px solid var(--color-divider); border-radius: 8px; object-fit: cover; }
+
+@media (max-width: 360px) {
+  .today-summary { gap: 5px; }
+  .nutrition-card { padding-inline: 7px; }
+  .nutrition-card strong { font-size: 19px; }
+  .checklist-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .checklist-row > a { grid-column: 1; margin-left: 34px; }
+  .activity-list li { grid-template-columns: minmax(0, 1fr) auto; }
+  .activity-list a { grid-column: 1; }
+  .food-group > header,
+  .activity-group > header { align-items: flex-start; }
+  .food-group > header > div:last-child,
+  .activity-group > header > div:last-child { flex-direction: column; align-items: stretch; }
+}

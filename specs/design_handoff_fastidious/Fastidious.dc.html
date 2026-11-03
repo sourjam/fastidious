@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fastidious">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+<style>
+html,body{margin:0;background:var(--color-bg);-webkit-tap-highlight-color:transparent}
+a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}
+button{font-family:inherit;cursor:pointer}
+[data-theme="dark"]{--color-bg:#15191d;--color-surface:#1d2227;--color-text:#e6e8ea;--color-accent:#749dc4;--color-divider:color-mix(in srgb,#e6e8ea 18%,transparent);--color-neutral-100:#2b2b2d;--color-neutral-200:#424244;--color-neutral-300:#5d5d60;--color-neutral-400:#7a7a7d;--color-neutral-500:#98989b;--color-accent-100:#1d2d3d;--color-accent-200:#2c455d;--color-accent-300:#416180;--color-accent-400:#597ea3;--color-accent-500:#749dc4;--color-accent-600:#94bce3;--color-accent-700:#b5d9fd;--color-accent-800:#d6ebff;--color-accent-900:#eef6ff;color-scheme:dark}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="min-height:100vh;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);display:flex;justify-content:center">
+<div style="width:100%;max-width:440px;min-height:100vh;display:flex;flex-direction:column">
+
+<header style="display:flex;align-items:center;gap:10px;padding:calc(16px + env(safe-area-inset-top)) 20px 4px">
+  <span style="font-family:var(--font-heading);font-weight:600;font-size:22px;letter-spacing:0.06em;text-transform:uppercase">Fastidious</span>
+  <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}"><span class="tag tag-outline">Offline</span></sc-if>
+  <span style="margin-left:auto;font-size:13px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ todayLabel }}</span>
+</header>
+
+<main style="flex:1;padding:18px 20px 28px;display:flex;flex-direction:column;gap:24px">
+
+<sc-if value="{{ showTimerA }}" hint-placeholder-val="{{ true }}">
+<section data-screen-label="Fast — Readout" style="display:flex;flex-direction:column;gap:24px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700);font-weight:500">{{ t.kicker }}</span>
+      <button class="btn btn-secondary" onClick="{{ openGoal }}" style="height:32px;padding:0 12px;font-size:15px;color:var(--color-text)">{{ t.goalLabel }} goal</button>
+    </div>
+    <div style="font-family:var(--font-heading);font-weight:600;font-size:80px;line-height:1;letter-spacing:-0.01em;font-variant-numeric:tabular-nums">{{ t.clock }}</div>
+    <div style="font-size:16px;color:color-mix(in srgb,var(--color-text) 70%,transparent)">{{ t.sub }}</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="position:relative;height:30px;border:1px solid var(--color-divider)">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:{{ t.pct }};background:var(--color-accent);transition:width 0.6s"></div>
+      <sc-for list="{{ t.markers }}" as="m" hint-placeholder-count="0">
+        <div style="position:absolute;top:-5px;bottom:-5px;left:{{ m.left }};width:1px;background:var(--color-text)"></div>
+      </sc-for>
+      <div style="position:absolute;top:-9px;bottom:-9px;left:{{ t.goalLeft }};width:2px;margin-left:-1px;background:var(--color-accent-800)"></div>
+    </div>
+    <div style="position:relative;height:34px">
+      <sc-for list="{{ t.markers }}" as="m" hint-placeholder-count="0">
+        <div style="position:absolute;left:{{ m.left }};transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;line-height:1.2;white-space:nowrap">
+          <span style="font-size:13px;font-weight:700;color:{{ m.color }}">{{ m.label }}</span>
+          <span style="font-size:11px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ m.short }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isFast }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:24px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <sc-for list="{{ t.cells }}" as="c" hint-placeholder-count="2">
+      <button class="blueprint" onClick="{{ c.onClick }}" style="text-align:left;background:transparent;padding:12px 14px;display:flex;flex-direction:column;gap:2px;color:var(--color-text)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ c.k }}</span>
+        <span style="font-family:var(--font-heading);font-weight:600;font-size:20px">{{ c.v }}</span>
+        <span style="font-size:12px;color:var(--color-accent-700)">{{ c.hint }}</span>
+      </button>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ t.idle }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 65%,transparent)">Fast length</span>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+        <sc-for list="{{ presets }}" as="p" hint-placeholder-count="8">
+          <button onClick="{{ p.onClick }}" style="height:56px;border:1px solid {{ p.border }};background:{{ p.bg }};color:{{ p.color }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0">
+            <span style="font-family:var(--font-heading);font-weight:600;font-size:19px;line-height:1.1">{{ p.label }}</span>
+            <span style="font-size:11px;opacity:0.8">{{ p.sub }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <button class="btn btn-primary blueprint" onClick="{{ mainAction }}" style="width:100%;height:56px;font-size:19px;letter-spacing:0.06em;text-transform:uppercase">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>{{ t.mainLabel }}
+  </button>
+
+  <div class="blueprint" style="padding:14px 16px 6px;display:flex;flex-direction:column">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:8px">
+      <span style="font-family:var(--font-heading);font-weight:600;font-size:19px">Fasting stages</span>
+      <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">Approximate, varies by person</span>
+    </div>
+    <sc-for list="{{ stages }}" as="s" hint-placeholder-count="7">
+      <div style="display:grid;grid-template-columns:40px 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--color-divider)">
+        <span style="font-family:var(--font-heading);font-weight:600;font-size:16px;color:{{ s.hColor }}">{{ s.at }}</span>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:15px;font-weight:{{ s.weight }};color:{{ s.color }}">{{ s.name }}</span>
+            <sc-if value="{{ s.current }}" hint-placeholder-val="{{ false }}"><span class="tag tag-accent">Now</span></sc-if>
+          </div>
+          <sc-if value="{{ s.current }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13px;color:color-mix(in srgb,var(--color-text) 72%,transparent);text-wrap:pretty">{{ s.desc }}</span>
+          </sc-if>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isCal }}" hint-placeholder-val="{{ false }}">
+<section data-screen-label="Calendar" style="display:flex;flex-direction:column;gap:18px">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--color-divider)">
+    <sc-for list="{{ calTabs }}" as="o" hint-placeholder-count="3">
+      <button onClick="{{ o.onClick }}" style="height:38px;border:none;border-left:{{ o.sep }};background:{{ o.bg }};color:{{ o.color }};font-family:var(--font-heading);font-weight:600;font-size:16px;letter-spacing:0.04em;text-transform:uppercase">{{ o.label }}</button>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <button class="btn btn-secondary btn-icon" onClick="{{ calPrev }}" aria-label="Previous" style="width:40px;height:40px;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <span style="font-family:var(--font-heading);font-weight:600;font-size:22px">{{ cal.title }}</span>
+      <span style="font-size:13px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ cal.subtitle }}</span>
+    </div>
+    <button class="btn btn-secondary btn-icon" onClick="{{ calNext }}" aria-label="Next" style="width:40px;height:40px;color:var(--color-text)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+  </div>
+
+  <sc-if value="{{ isDay }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;justify-content:center">{{ dayClock }}</div>
+      <div style="display:flex;flex-direction:column">
+        <sc-for list="{{ dayFasts }}" as="f" hint-placeholder-count="1">
+          <button onClick="{{ f.onClick }}" style="display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;text-align:left;background:transparent;border:none;border-top:1px solid var(--color-divider);padding:12px 2px;color:var(--color-text)">
+            <span style="font-size:15px;font-weight:500">{{ f.range }}</span>
+            <span style="font-family:var(--font-heading);font-weight:600;font-size:19px">{{ f.dur }}</span>
+            <span style="font-size:13px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ f.meta }}</span>
+            <span class="tag {{ f.tagClass }}" style="justify-self:end">{{ f.tag }}</span>
+          </button>
+        </sc-for>
+        <sc-if value="{{ dayEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:1px solid var(--color-divider);padding:14px 2px;font-size:15px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">No fasting logged on this day.</div>
+        </sc-if>
+        <button class="btn btn-secondary" onClick="{{ addPast }}" style="height:44px;font-size:16px;color:var(--color-text);border-top:1px solid var(--color-divider)">+ Log a past fast</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isMonth }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px">
+        <sc-for list="{{ weekdays }}" as="w" hint-placeholder-count="7">
+          <span style="text-align:center;font-size:11px;letter-spacing:0.08em;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ w }}</span>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px">
+        <sc-for list="{{ monthCells }}" as="c" hint-placeholder-count="35">
+          <button onClick="{{ c.onClick }}" style="aspect-ratio:1/1.1;padding:4px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;background:{{ c.bg }};color:{{ c.color }};border:1px solid {{ c.border }};visibility:{{ c.vis }}">
+            <span style="font-size:13px;font-weight:{{ c.weight }}">{{ c.n }}</span>
+            <span style="font-family:var(--font-heading);font-weight:600;font-size:14px;line-height:1">{{ c.h }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isYear }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <sc-for list="{{ yearRows }}" as="r" hint-placeholder-count="12">
+        <div style="display:grid;grid-template-columns:28px repeat(31,minmax(0,1fr));gap:2px;align-items:center">
+          <button onClick="{{ r.onClick }}" style="background:transparent;border:none;padding:0;text-align:left;font-size:11px;letter-spacing:0.04em;color:color-mix(in srgb,var(--color-text) 70%,transparent)">{{ r.label }}</button>
+          <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="31">
+            <div title="{{ c.title }}" style="aspect-ratio:1;background:{{ c.bg }};border:1px solid {{ c.border }};visibility:{{ c.vis }}"></div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showLegend }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">
+      <span>Hours fasted</span>
+      <sc-for list="{{ legend }}" as="l" hint-placeholder-count="6">
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:12px;height:12px;background:{{ l.bg }};border:1px solid var(--color-divider)"></span>{{ l.label }}</span>
+      </sc-for>
+    </div>
+  </sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+<section data-screen-label="Stats" style="display:flex;flex-direction:column;gap:24px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <sc-for list="{{ statCells }}" as="s" hint-placeholder-count="6">
+      <div class="blueprint" style="padding:12px 14px;display:flex;flex-direction:column;gap:2px">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ s.k }}</span>
+        <span style="font-family:var(--font-heading);font-weight:600;font-size:30px;line-height:1.1">{{ s.v }}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div class="blueprint" style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <span style="font-family:var(--font-heading);font-weight:600;font-size:19px">Last 14 fasts</span>
+      <span style="font-size:12px;color:color-mix(in srgb,var(--color-text) 65%,transparent)">{{ recentNote }}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;align-items:end;height:120px;border-bottom:1px solid var(--color-divider)">
+      <sc-for list="{{ recent }}" as="b" hint-placeholder-count="14">
+        <div title="{{ b.title }}" style="height:{{ b.h }};background:{{ b.bg }}"></div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="blueprint" style="padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:var(--font-heading);font-weight:600;font-size:19px">Weight</span>
+      <button class="btn btn-secondary" onClick="{{ openWeight }}" style="height:32px;font-size:15px;color:var(--color-text)">+ Add</button>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <span style="font-family:var(--font-heading);font-weight:600;font-size:36px;line-height:1">{{ w.latest }}</span>
+      <span style="font-size:14px;color:var(--color-accent-700)">{{ w.change }}</span>
+    </div>
+    <div style="display:flex;gap:3px;align-items:end;height:60px;border-bottom:1px solid var(--color-divider)">
+      <sc-for list="{{ w.bars }}" as="b" hint-placeholder-count="20">
+        <div title="{{ b.title }}" style="flex:1;height:{{ b.h }};background:var(--color-accent-300)"></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ w.rows }}" as="r" hint-placeholder-count="4">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--color-divider);font-size:14px">
+          <span>{{ r.date }}</span>
+          <span style="display:flex;align-items:center;gap:10px"><span style="font-weight:500">{{ r.v }}</span><button onClick="{{ r.onDelete }}" aria-label="Delete entry" style="background:transparent;border:none;color:color-mix(in srgb,var(--color-text) 55%,transparent);font-size:16px;width:28px;height:28px">×</button></span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ isMe }}" hint-placeholder-val="{{ false }}">
+<section data-screen-label="Settings" style="display:flex;flex-direction:column;gap:24px">
+  <div class="blueprint" style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <span style="font-family:var(--font-heading);font-weight:600;font-size:19px">Your link</span>
+    <p style="margin:0;font-size:14px;color:color-mix(in srgb,var(--color-text) 72%,transparent);text-wrap:pretty">There's no login. This ID in the address bar is your log. Bookmark it or add the page to your Home Screen.</p>
+    <div style="font-size:13px;padding:8px 10px;background:var(--color-surface);border:1px solid var(--color-divider);word-break:break-all;font-variant-numeric:tabular-nums">{{ userId }}</div>
+    <button class="btn btn-secondary" onClick="{{ copyLink }}" style="height:40px;font-size:16px;color:var(--color-text)">{{ copyLabel }}</button>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <sc-for list="{{ settingsSegs }}" as="g" hint-placeholder-count="2">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <span style="font-size:15px">{{ g.label }}</span>
+        <div style="display:flex;border:1px solid var(--color-divider)">
+          <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="2">
+            <button onClick="{{ o.onClick }}" style="height:34px;min-width:64px;padding:0 12px;border:none;border-left:{{ o.sep }};background:{{ o.bg }};color:{{ o.color }};font-size:14px">{{ o.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb,var(--color-text) 65%,transparent)">Data · {{ dataSummary }}</span>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-secondary" onClick="{{ exportData }}" style="height:44px;font-size:16px;color:var(--color-text)">Export JSON</button>
+      <button class="btn btn-secondary" onClick="{{ pickImport }}" style="height:44px;font-size:16px;color:var(--color-text)">Import JSON</button>
+    </div>
+    <input ref="{{ fileRef }}" type="file" accept="application/json,.json" onChange="{{ onImport }}" style="display:none">
+    <button class="btn btn-ghost" onClick="{{ askClear }}" style="height:40px;font-size:15px;align-self:flex-start">Clear all data</button>
+  </div>
+</section>
+</sc-if>
+</main>
+
+<nav style="position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);background:var(--color-bg);border-top:1px solid var(--color-divider);padding-bottom:env(safe-area-inset-bottom)">
+  <button onClick="{{ goFast }}" style="height:60px;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:{{ nav.fast }};font-size:12px;letter-spacing:0.04em">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" x2="14" y1="2" y2="2"></line><line x1="12" x2="15" y1="14" y2="11"></line><circle cx="12" cy="14" r="8"></circle></svg>Fast</button>
+  <button onClick="{{ goCal }}" style="height:60px;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:{{ nav.cal }};font-size:12px;letter-spacing:0.04em">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>Calendar</button>
+  <button onClick="{{ goStats }}" style="height:60px;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:{{ nav.stats }};font-size:12px;letter-spacing:0.04em">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M18 17V9M13 17V5M8 17v-3"></path></svg>Stats</button>
+  <button onClick="{{ goMe }}" style="height:60px;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:{{ nav.me }};font-size:12px;letter-spacing:0.04em">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 0 0-16 0"></path></svg>You</button>
+</nav>
+</div>
+
+<sc-if value="{{ hasModal }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:color-mix(in srgb,#2b2b2d 50%,transparent)">
+  <div class="blueprint" onClick="{{ stop }}" style="width:calc(100% - 24px);max-width:420px;margin:0 12px calc(16px + env(safe-area-inset-bottom));background:var(--color-bg);color:var(--color-text);box-shadow:var(--shadow-lg);padding:18px;display:flex;flex-direction:column;gap:14px">
+    <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+    <span style="font-family:var(--font-heading);font-weight:600;font-size:24px">{{ m.title }}</span>
+
+    <sc-if value="{{ m.isGoal }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+          <sc-for list="{{ presets }}" as="p" hint-placeholder-count="8">
+            <button onClick="{{ p.onClick }}" style="height:56px;border:1px solid {{ p.border }};background:{{ p.bg }};color:{{ p.color }};display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0">
+              <span style="font-family:var(--font-heading);font-weight:600;font-size:19px;line-height:1.1">{{ p.label }}</span>
+              <span style="font-size:11px;opacity:0.8">{{ p.sub }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div class="field" style="display:flex;flex-direction:column">
+          <label>Custom length (hours)</label>
+          <div style="display:flex;gap:8px">
+            <input class="input" type="number" min="1" max="168" step="0.5" value="{{ draft.custom }}" onChange="{{ onCustom }}" style="font-size:16px;height:44px">
+            <button class="btn btn-secondary" onClick="{{ applyCustom }}" style="height:44px;min-width:80px;font-size:16px;color:var(--color-text)">Set</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ m.isTimes }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="field" style="display:flex;flex-direction:column">
+          <label>Started</label>
+          <input class="input" type="datetime-local" value="{{ draft.start }}" onChange="{{ onStart }}" style="font-size:16px;height:44px">
+        </div>
+        <sc-if value="{{ m.hasEnd }}" hint-placeholder-val="{{ false }}">
+          <div class="field" style="display:flex;flex-direction:column">
+            <label>Ended</label>
+            <input class="input" type="datetime-local" value="{{ draft.end }}" onChange="{{ onEnd }}" style="font-size:16px;height:44px">
+          </div>
+        </sc-if>
+        <span style="font-size:14px;color:{{ m.noteColor }}">{{ m.note }}</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ m.isEnded }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-family:var(--font-heading);font-weight:600;font-size:56px;line-height:1">{{ m.endedDur }}</span>
+        <span style="font-size:15px;color:color-mix(in srgb,var(--color-text) 72%,transparent)">{{ m.endedNote }}</span>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ m.isWeight }}" hint-placeholder-val="{{ false }}">
+      <div class="field" style="display:flex;flex-direction:column">
+        <label>{{ m.weightLabel }}</label>
+        <input class="input" type="number" inputMode="decimal" step="0.1" value="{{ draft.w }}" onChange="{{ onW }}" style="font-size:16px;height:44px">
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ m.isText }}" hint-placeholder-val="{{ false }}">
+      <p style="margin:0;font-size:15px;text-wrap:pretty">{{ m.text }}</p>
+    </sc-if>
+
+    <div style="display:flex;gap:10px;justify-content:space-between;align-items:center">
+      <sc-if value="{{ m.secondary }}" hint-placeholder-val="{{ false }}">
+        <button class="btn btn-ghost" onClick="{{ m.onSecondary }}" style="height:44px;font-size:16px">{{ m.secondary }}</button>
+      </sc-if>
+      <div style="display:flex;gap:10px;margin-left:auto">
+        <button class="btn btn-secondary" onClick="{{ closeModal }}" style="height:44px;min-width:84px;font-size:16px;color:var(--color-text)">{{ m.cancel }}</button>
+        <sc-if value="{{ m.primary }}" hint-placeholder-val="{{ false }}">
+          <button class="btn btn-primary" onClick="{{ m.onPrimary }}" style="height:44px;min-width:96px;font-size:16px">{{ m.primary }}</button>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light' | 'dark'&quot;}}">
+const H = 3600000;
+const STAGES = [
+  { h: 0, name: 'Fed', short: 'Fed', desc: 'Digesting your last meal. Blood sugar and insulin are elevated.' },
+  { h: 4, name: 'Post-absorptive', short: 'Settle', desc: 'Blood sugar settles and the body starts drawing on stored glycogen.' },
+  { h: 12, name: 'Fat burning', short: 'Burn', desc: 'Glycogen is running low and fat becomes the main fuel source.' },
+  { h: 18, name: 'Ketosis', short: 'Keto', desc: 'The liver is producing ketones from fat at a meaningful rate.' },
+  { h: 24, name: 'Autophagy', short: 'Auto', desc: 'Cellular cleanup processes are thought to ramp up around here.' },
+  { h: 48, name: 'Deep ketosis', short: 'Deep', desc: 'Ketone levels keep climbing. Hunger often eases.' },
+  { h: 72, name: 'Extended', short: 'Ext', desc: 'Fasts this long are best done with medical guidance.' }
+];
+const PRESETS = [
+  { h: 13, label: '13h', sub: 'Circadian' }, { h: 16, label: '16:8', sub: 'Lean' }, { h: 18, label: '18:6', sub: 'Steady' },
+  { h: 20, label: '20:4', sub: 'Warrior' }, { h: 23, label: 'OMAD', sub: '23:1' }, { h: 36, label: '36h', sub: 'Monk' },
+  { h: 48, label: '48h', sub: 'Two-day' }, { h: 72, label: '72h', sub: 'Three-day' }
+];
+const MUTED = 'color-mix(in srgb,var(--color-text) 65%,transparent)';
+const pad = n => String(n).padStart(2, '0');
+const sod = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+const addDays = (t, n) => { const d = new Date(t); d.setDate(d.getDate() + n); return d.getTime(); };
+const hms = ms => { const s = Math.floor(Math.max(0, ms) / 1000); return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60); };
+const dur = ms => { const m = Math.round(Math.max(0, ms) / 60000); const h = Math.floor(m / 60); return h ? h + 'h ' + pad(m % 60) + 'm' : (m % 60) + 'm'; };
+const tfmt = t => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+const dfmt = t => new Date(t).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+const relDay = (t, now) => { const d = sod(t), n = sod(now); if (d === n) return 'Today'; if (d === addDays(n, -1)) return 'Yesterday'; if (d === addDays(n, 1)) return 'Tomorrow'; return dfmt(t); };
+const when = (t, now) => relDay(t, now) + ', ' + tfmt(t);
+const toInput = t => { const d = new Date(t); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const fromInput = s => s ? new Date(s).getTime() : NaN;
+const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+const goalName = h => { const p = PRESETS.find(p => p.h === h); return p ? p.label : (Math.round(h * 10) / 10) + 'h'; };
+const heat = h => h <= 0 ? null : h < 8 ? 'var(--color-accent-100)' : h < 14 ? 'var(--color-accent-200)' : h < 18 ? 'var(--color-accent-300)' : h < 22 ? 'var(--color-accent-400)' : 'var(--color-accent-600)';
+
+function seed(now) {
+  const fasts = [], weights = [], today = sod(now), goals = [16, 16, 18, 16, 13, 20, 16];
+  for (let i = 0; i < 74; i++) {
+    if ((i * 7) % 11 === 3) continue;
+    const d = addDays(today, i - 75), g = goals[i % 7];
+    const start = d + (19.25 + ((i * 13) % 5) * 0.3) * H;
+    fasts.push({ id: uid(), start, end: start + (g + (((i * 17) % 9) - 3) * 0.4) * H, goalH: g });
+  }
+  for (let i = 0; i < 26; i++) weights.push({ t: addDays(today, i * 3 - 76) + 7.5 * H, kg: Math.round((82.6 - i * 0.13 + (((i * 7) % 5) - 2) * 0.18) * 10) / 10 });
+  const lastEnd = fasts[fasts.length - 1].end;
+  return { fasts, weights, active: { start: Math.max(lastEnd + 5 * H, now - 13.6 * H), goalH: 16 }, goalH: 16, unit: 'kg', theme: null };
+}
+function overlap(fasts, a, b) { let s = 0; for (const f of fasts) { const x = Math.max(a, f.start), y = Math.min(b, f.end); if (y > x) s += y - x; } return s; }
+
+class Component extends DCLogic {
+  state = this.init();
+
+  init() {
+    let u = null;
+    try { u = new URLSearchParams(location.search).get('u'); } catch (e) {}
+    if (!u) u = localStorage.getItem('fastidious:last') || uid();
+    localStorage.setItem('fastidious:last', u);
+    try { const url = new URL(location.href); if (url.searchParams.get('u') !== u) { url.searchParams.set('u', u); history.replaceState(history.state, '', url); } } catch (e) {}
+    const key = 'fastidious:v1:' + u;
+    let data = null;
+    try { data = JSON.parse(localStorage.getItem(key)); } catch (e) {}
+    const now = Date.now();
+    if (!data || !Array.isArray(data.fasts)) { data = seed(now); localStorage.setItem(key, JSON.stringify(data)); }
+    return { u, key, data, now, tab: 'fast', calMode: 'day', dayT: sod(now), monthT: sod(now), modal: null, draft: {}, copied: false, offline: typeof navigator !== 'undefined' && navigator.onLine === false };
+  }
+  componentDidMount() {
+    this.iv = setInterval(() => this.setState({ now: Date.now() }), 1000);
+    this.onNet = () => this.setState({ offline: !navigator.onLine });
+    window.addEventListener('online', this.onNet); window.addEventListener('offline', this.onNet);
+    try { if ('serviceWorker' in navigator && window.top === window && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) {}
+    this.fileRef = this.fileRef || React.createRef();
+  }
+  componentWillUnmount() { clearInterval(this.iv); window.removeEventListener('online', this.onNet); window.removeEventListener('offline', this.onNet); }
+
+  setData(fn, extra) {
+    this.setState(s => { const data = fn(s.data); try { localStorage.setItem(s.key, JSON.stringify(data)); } catch (e) {} return Object.assign({ data }, extra || {}); });
+  }
+  open(modal, draft) { this.setState({ modal, draft: draft || {} }); }
+  close = () => this.setState({ modal: null, draft: {} });
+
+  startFast = () => this.setData(d => ({ ...d, active: { start: Date.now(), goalH: d.goalH } }));
+  endFast = () => {
+    const d = this.state.data; if (!d.active) return;
+    const f = { id: uid(), start: d.active.start, end: Date.now(), goalH: d.active.goalH };
+    this.setData(x => ({ ...x, active: null, fasts: [...x.fasts, f].sort((a, b) => a.start - b.start) }), { modal: { type: 'ended', id: f.id } });
+  };
+  setGoal = h => { this.setData(d => ({ ...d, goalH: h, active: d.active ? { ...d.active, goalH: h } : null })); this.close(); };
+  editActive = () => this.open({ type: 'times', mode: 'active' }, { start: toInput(this.state.data.active.start) });
+  editFast = id => { const f = this.state.data.fasts.find(f => f.id === id); if (f) this.open({ type: 'times', mode: 'fast', id }, { start: toInput(f.start), end: toInput(f.end), goalH: f.goalH }); };
+  addPast = () => { const d = this.state.dayT; this.open({ type: 'times', mode: 'new' }, { start: toInput(addDays(d, -1) + 20 * H), end: toInput(d + 12 * H) }); };
+
+  validate() {
+    const { modal, draft, data, now } = this.state;
+    const s = fromInput(draft.start), e = modal.mode === 'active' ? now : fromInput(draft.end);
+    if (isNaN(s) || isNaN(e)) return 'Enter a valid date and time.';
+    if (s > now) return 'Start time is in the future.';
+    if (e <= s) return 'End must be after start.';
+    if (e > now + 60000) return 'End time is in the future.';
+    const others = data.fasts.filter(f => f.id !== modal.id);
+    if (data.active && modal.mode !== 'active') others.push({ start: data.active.start, end: now });
+    if (others.some(f => f.start < e && f.end > s)) return 'Overlaps another fast.';
+    return null;
+  }
+  saveTimes = () => {
+    const { modal, draft } = this.state;
+    if (this.validate()) return;
+    const s = fromInput(draft.start), e = fromInput(draft.end);
+    if (modal.mode === 'active') this.setData(d => ({ ...d, active: { ...d.active, start: s } }), { modal: null });
+    else if (modal.mode === 'new') this.setData(d => ({ ...d, fasts: [...d.fasts, { id: uid(), start: s, end: e, goalH: d.goalH }].sort((a, b) => a.start - b.start) }), { modal: null });
+    else this.setData(d => ({ ...d, fasts: d.fasts.map(f => f.id === modal.id ? { ...f, start: s, end: e } : f).sort((a, b) => a.start - b.start) }), { modal: null });
+  };
+  deleteFast = () => { const id = this.state.modal.id; this.setData(d => ({ ...d, fasts: d.fasts.filter(f => f.id !== id) }), { modal: null }); };
+  discardActive = () => this.setData(d => ({ ...d, active: null }), { modal: null });
+
+  addWeight = () => {
+    const v = parseFloat(this.state.draft.w); if (!(v > 0)) return;
+    const kg = this.state.data.unit === 'lb' ? v / 2.20462 : v;
+    this.setData(d => ({ ...d, weights: [...d.weights, { t: Date.now(), kg: Math.round(kg * 100) / 100 }].sort((a, b) => a.t - b.t) }), { modal: null });
+  };
+  fmtW(kg) { return this.state.data.unit === 'lb' ? (kg * 2.20462).toFixed(1) + ' lb' : kg.toFixed(1) + ' kg'; }
+
+  exportData = () => {
+    const blob = new Blob([JSON.stringify({ app: 'fastidious', version: 1, user: this.state.u, exported: new Date().toISOString(), ...this.state.data }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fastidious-' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  onImport = e => {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    file.text().then(txt => {
+      const j = JSON.parse(txt);
+      if (!Array.isArray(j.fasts)) throw new Error('bad');
+      this.setData(() => ({ fasts: j.fasts, weights: j.weights || [], active: j.active || null, goalH: j.goalH || 16, unit: j.unit || 'kg', theme: j.theme || null }), { modal: { type: 'text', title: 'Imported', text: j.fasts.length + ' fasts and ' + (j.weights || []).length + ' weight entries loaded.' } });
+    }).catch(() => this.open({ type: 'text', title: 'Import failed', text: 'That file is not a Fastidious export.' }));
+    e.target.value = '';
+  };
+  copyLink = () => {
+    const url = location.href;
+    const done = () => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 1600); };
+    try { navigator.clipboard.writeText(url).then(done, done); } catch (e) { done(); }
+  };
+
+  calShift(dir) {
+    const { calMode, dayT, monthT } = this.state;
+    if (calMode === 'day') this.setState({ dayT: addDays(dayT, dir) });
+    else { const d = new Date(monthT); d.setDate(1); if (calMode === 'month') d.setMonth(d.getMonth() + dir); else d.setFullYear(d.getFullYear() + dir); this.setState({ monthT: d.getTime() }); }
+  }
+
+  dayClock(fasts, day, now) {
+    const e = React.createElement, S = 300, c = S / 2, R = 118, sw = 22;
+    const ang = t => ((t - day) / (24 * H)) * 2 * Math.PI - Math.PI / 2;
+    const pt = (a, r) => [c + r * Math.cos(a), c + r * Math.sin(a)];
+    const kids = [e('circle', { key: 'bg', cx: c, cy: c, r: R, fill: 'none', style: { stroke: 'var(--color-divider)' }, strokeWidth: sw })];
+    let total = 0;
+    fasts.forEach((f, i) => {
+      const s = Math.max(day, f.start), en = Math.min(day + 24 * H, f.end); if (en <= s) return; total += en - s;
+      if (en - s >= 24 * H - 1000) { kids.push(e('circle', { key: 'f' + i, cx: c, cy: c, r: R, fill: 'none', style: { stroke: 'var(--color-accent)' }, strokeWidth: sw })); return; }
+      const a1 = ang(s), a2 = ang(en), [x1, y1] = pt(a1, R), [x2, y2] = pt(a2, R), large = (en - s) > 12 * H ? 1 : 0;
+      kids.push(e('path', { key: 'f' + i, d: `M${x1} ${y1} A${R} ${R} 0 ${large} 1 ${x2} ${y2}`, fill: 'none', style: { stroke: f.live ? 'var(--color-accent-400)' : 'var(--color-accent)' }, strokeWidth: sw }));
+    });
+    for (let h = 0; h < 24; h++) {
+      const a = ((h / 24) * 2 - 0.5) * Math.PI, major = h % 6 === 0;
+      const [x1, y1] = pt(a, R + sw / 2 + 3), [x2, y2] = pt(a, R + sw / 2 + (major ? 11 : 6));
+      kids.push(e('line', { key: 't' + h, x1, y1, x2, y2, style: { stroke: 'var(--color-text)' }, strokeWidth: 1, opacity: major ? 0.8 : 0.4 }));
+      if (major) { const [lx, ly] = pt(a, R - sw / 2 - 14); kids.push(e('text', { key: 'l' + h, x: lx, y: ly + 4, textAnchor: 'middle', style: { fill: 'var(--color-text)', fontFamily: 'var(--font-body)', fontSize: 12, opacity: 0.7 } }, h === 0 ? '12a' : h === 6 ? '6a' : h === 12 ? '12p' : '6p')); }
+    }
+    if (now >= day && now < day + 24 * H) { const [x, y] = pt(ang(now), R + sw / 2 + 2), [x0, y0] = pt(ang(now), R - sw / 2 - 2); kids.push(e('line', { key: 'now', x1: x0, y1: y0, x2: x, y2: y, style: { stroke: 'var(--color-text)' }, strokeWidth: 2 })); }
+    kids.push(e('text', { key: 'tot', x: c, y: c + 6, textAnchor: 'middle', style: { fill: 'var(--color-text)', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 40 } }, dur(total)));
+    kids.push(e('text', { key: 'sub', x: c, y: c + 30, textAnchor: 'middle', style: { fill: 'var(--color-text)', fontFamily: 'var(--font-body)', fontSize: 13, opacity: 0.65, letterSpacing: '0.08em' } }, 'FASTED'));
+    return e('svg', { width: S, height: S, viewBox: `0 0 ${S} ${S}`, style: { display: 'block', maxWidth: '100%' } }, kids);
+  }
+
+  renderVals() {
+    const st = this.state, d = st.data, now = st.now;
+    const theme = d.theme || this.props.theme || 'light';
+    const all = d.fasts.concat(d.active ? [{ id: 'live', start: d.active.start, end: now, goalH: d.active.goalH, live: true }] : []);
+
+    // timer
+    const a = d.active, goalH = a ? a.goalH : d.goalH, el = a ? now - a.start : 0, elH = el / H;
+    const scale = Math.ceil(Math.max(goalH, elH) / 2) * 2 || 2;
+    const pctOf = h => Math.min(100, (h / scale) * 100) + '%';
+    const curIdx = a ? STAGES.reduce((k, s, i) => elH >= s.h ? i : k, 0) : -1;
+    const last = d.fasts[d.fasts.length - 1];
+    const left = goalH * H - el;
+    const t = {
+      idle: !a, clock: hms(el), pct: pctOf(elH), goalLeft: pctOf(goalH), goalLabel: goalName(goalH),
+      kicker: a ? 'Fasting · started ' + tfmt(a.start) : 'Not fasting',
+      sub: a ? (left > 0 ? dur(left) + ' to goal' : 'Goal reached · +' + dur(-left)) : (last ? 'Eating for ' + dur(now - last.end) : 'Pick a length and start'),
+      mainLabel: a ? 'End fast' : 'Start ' + goalName(goalH) + ' fast',
+      markers: STAGES.filter(s => s.h > 0 && s.h <= scale).map(s => ({ left: pctOf(s.h), label: s.h + 'h', short: s.short, color: a && elH >= s.h ? 'var(--color-accent-700)' : 'var(--color-text)' })),
+      stageKicker: a ? 'Stage ' + (curIdx + 1) + ' of ' + STAGES.length + ' · ' + STAGES[curIdx].h + 'h+' : 'Not fasting',
+      stageName: a ? STAGES[curIdx].name : 'Eating window',
+      stageDesc: a ? (STAGES[curIdx].desc + (STAGES[curIdx + 1] ? ' ' + STAGES[curIdx + 1].name + ' in ' + dur((STAGES[curIdx + 1].h - elH) * H) + '.' : '')) : (last ? 'Last fast ended ' + when(last.end, now).toLowerCase() + ' after ' + dur(last.end - last.start) + '.' : 'Choose a fast length below.'),
+      bands: STAGES.filter(s => s.h < scale).map((s, i, arr) => { const end = Math.min(scale, (STAGES[STAGES.indexOf(s) + 1] || { h: scale }).h); return { left: pctOf(s.h), width: ((end - s.h) / scale * 100) + '%', short: s.short, bg: i % 2 ? 'var(--color-surface)' : 'transparent', color: a && STAGES.indexOf(s) === curIdx ? 'var(--color-accent-700)' : MUTED }; }),
+      ticks: [], tickLabels: [],
+      cells: a ? [
+        { k: 'Started', v: when(a.start, now), hint: 'Edit', onClick: this.editActive },
+        { k: 'Goal', v: when(a.start + goalH * H, now), hint: goalName(goalH) + ' · change', onClick: () => this.open({ type: 'goal' }, { custom: goalH }) }
+      ] : [
+        { k: 'Last fast', v: last ? dur(last.end - last.start) : '—', hint: last ? 'Edit' : '', onClick: last ? () => this.editFast(last.id) : undefined },
+        { k: 'Ended', v: last ? when(last.end, now) : '—', hint: '', onClick: undefined }
+      ]
+    };
+    const step = scale > 48 ? 4 : scale > 24 ? 2 : 1;
+    for (let h = 0; h <= scale; h += step) { const major = h % (scale > 24 ? 12 : 6) === 0; t.ticks.push({ left: pctOf(h), h: major ? '10px' : '5px' }); if (major) t.tickLabels.push({ left: pctOf(h), label: h + 'h' }); }
+
+    const presets = PRESETS.map(p => { const on = p.h === goalH; return { label: p.label, sub: p.sub, onClick: () => this.setGoal(p.h), bg: on ? 'var(--color-accent)' : 'transparent', color: on ? 'var(--color-bg)' : 'var(--color-text)', border: on ? 'var(--color-accent)' : 'var(--color-divider)' }; });
+    const stages = STAGES.map((s, i) => ({ at: s.h + 'h', name: s.name, desc: s.desc, current: i === curIdx, weight: i === curIdx ? 600 : 400, color: a && i <= curIdx ? 'var(--color-text)' : MUTED, hColor: a && i <= curIdx ? 'var(--color-accent-700)' : MUTED }));
+
+    // calendar
+    const mode = st.calMode;
+    const calTabs = [['day', 'Day'], ['month', 'Month'], ['year', 'Year']].map(([k, l], i) => ({ label: l, onClick: () => this.setState({ calMode: k }), bg: mode === k ? 'var(--color-accent)' : 'transparent', color: mode === k ? 'var(--color-bg)' : 'var(--color-text)', sep: i ? '1px solid var(--color-divider)' : 'none' }));
+    const md = new Date(st.monthT), Y = md.getFullYear(), M = md.getMonth();
+    const today = sod(now);
+    let cal = { title: '', subtitle: '' }, dayFasts = [], monthCells = [], yearRows = [], dayClockEl = null;
+    if (mode === 'day') {
+      const dayT = st.dayT, inDay = all.filter(f => f.end > dayT && f.start < dayT + 24 * H);
+      cal = { title: relDay(dayT, now) === 'Today' || relDay(dayT, now) === 'Yesterday' ? relDay(dayT, now) : new Date(dayT).toLocaleDateString([], { weekday: 'long' }), subtitle: new Date(dayT).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' }) };
+      dayClockEl = this.dayClock(inDay, dayT, now);
+      dayFasts = inDay.map(f => { const met = (f.end - f.start) >= f.goalH * H; return { range: tfmt(f.start) + ' → ' + (f.live ? 'now' : tfmt(f.end)), meta: relDay(f.start, now) + (f.live ? ' · in progress' : ' – ' + relDay(f.end, now)) + ' · ' + goalName(f.goalH) + ' goal', dur: dur(f.end - f.start), tag: f.live ? 'Live' : met ? 'Goal met' : 'Short', tagClass: f.live || met ? 'tag-accent' : 'tag-neutral', onClick: f.live ? this.editActive : () => this.editFast(f.id) }; });
+    } else if (mode === 'month') {
+      const first = new Date(Y, M, 1).getTime(), days = new Date(Y, M + 1, 0).getDate(), lead = new Date(first).getDay();
+      let tot = 0, cnt = 0;
+      for (let i = 0; i < lead; i++) monthCells.push({ vis: 'hidden', n: '', h: '', bg: 'transparent', border: 'transparent', color: 'inherit', weight: 400 });
+      for (let i = 1; i <= days; i++) {
+        const dt = new Date(Y, M, i).getTime(), hrs = overlap(all, dt, addDays(dt, 1)) / H, bg = heat(hrs), strong = hrs >= 22, isT = dt === today;
+        if (hrs > 0) { tot += hrs; cnt++; }
+        monthCells.push({ vis: 'visible', n: i, h: hrs > 0 ? Math.round(hrs) + 'h' : '', bg: bg || 'transparent', color: strong ? 'var(--color-bg)' : 'var(--color-text)', border: isT ? 'var(--color-text)' : 'var(--color-divider)', weight: isT ? 700 : 400, onClick: () => this.setState({ calMode: 'day', dayT: dt }) });
+      }
+      const ended = d.fasts.filter(f => { const e = new Date(f.end); return e.getFullYear() === Y && e.getMonth() === M; });
+      cal = { title: md.toLocaleDateString([], { month: 'long', year: 'numeric' }), subtitle: ended.length ? ended.length + ' fasts · avg ' + dur(ended.reduce((s, f) => s + f.end - f.start, 0) / ended.length) : 'No fasts' };
+    } else {
+      let n = 0;
+      for (let m = 0; m < 12; m++) {
+        const days = new Date(Y, m + 1, 0).getDate(), cells = [];
+        for (let i = 1; i <= 31; i++) {
+          if (i > days) { cells.push({ vis: 'hidden', bg: 'transparent', border: 'transparent', title: '' }); continue; }
+          const dt = new Date(Y, m, i).getTime(), hrs = dt > now ? 0 : overlap(all, dt, addDays(dt, 1)) / H;
+          cells.push({ vis: 'visible', bg: heat(hrs) || 'transparent', border: dt === today ? 'var(--color-text)' : 'var(--color-divider)', title: dfmt(dt) + ' · ' + dur(hrs * H) });
+        }
+        yearRows.push({ label: new Date(Y, m, 1).toLocaleDateString([], { month: 'short' }), cells, onClick: () => this.setState({ calMode: 'month', monthT: new Date(Y, m, 1).getTime() }) });
+      }
+      n = d.fasts.filter(f => new Date(f.end).getFullYear() === Y).length;
+      cal = { title: String(Y), subtitle: n + ' fasts · ' + Math.round(d.fasts.filter(f => new Date(f.end).getFullYear() === Y).reduce((s, f) => s + f.end - f.start, 0) / H) + ' hours' };
+    }
+    const legend = [['<8', 'var(--color-accent-100)'], ['8', 'var(--color-accent-200)'], ['14', 'var(--color-accent-300)'], ['18', 'var(--color-accent-400)'], ['22+', 'var(--color-accent-600)']].map(([label, bg]) => ({ label, bg }));
+
+    // stats
+    const fs = d.fasts, durs = fs.map(f => f.end - f.start);
+    const metDays = new Set(fs.filter(f => f.end - f.start >= f.goalH * H).map(f => sod(f.end)));
+    let cur = 0, cd = metDays.has(today) ? today : addDays(today, -1);
+    while (metDays.has(cd)) { cur++; cd = addDays(cd, -1); }
+    let best = 0, run = 0, prev = null;
+    [...metDays].sort((x, y) => x - y).forEach(dd => { run = prev !== null && addDays(prev, 1) === dd ? run + 1 : 1; best = Math.max(best, run); prev = dd; });
+    const statCells = [
+      { k: 'Current streak', v: cur + (cur === 1 ? ' day' : ' days') }, { k: 'Longest streak', v: best + (best === 1 ? ' day' : ' days') },
+      { k: 'Fasts logged', v: String(fs.length) }, { k: 'Average', v: fs.length ? dur(durs.reduce((s, x) => s + x, 0) / fs.length) : '—' },
+      { k: 'Longest fast', v: fs.length ? dur(Math.max(...durs)) : '—' }, { k: 'Total hours', v: Math.round(durs.reduce((s, x) => s + x, 0) / H).toLocaleString() }
+    ];
+    const rec = fs.slice(-14), mx = Math.max(1, ...rec.map(f => Math.max(f.end - f.start, f.goalH * H)));
+    const recent = rec.map(f => { const met = f.end - f.start >= f.goalH * H; return { h: ((f.end - f.start) / mx * 100) + '%', bg: met ? 'var(--color-accent)' : 'var(--color-neutral-400)', title: dfmt(f.end) + ' · ' + dur(f.end - f.start) }; });
+    const metN = rec.filter(f => f.end - f.start >= f.goalH * H).length;
+    const ws = d.weights, wl = ws[ws.length - 1];
+    const w30 = ws.filter(x => x.t >= now - 30 * 24 * H);
+    const wv = ws.slice(-24).map(x => x.kg), wmin = Math.min(...wv) - 0.5, wmax = Math.max(...wv) + 0.3;
+    const w = {
+      latest: wl ? this.fmtW(wl.kg) : '—',
+      change: w30.length > 1 ? ((w30[w30.length - 1].kg - w30[0].kg) > 0 ? '+' : '−') + this.fmtW(Math.abs(w30[w30.length - 1].kg - w30[0].kg)) + ' in 30 days' : (wl ? 'Logged ' + relDay(wl.t, now).toLowerCase() : 'No entries yet'),
+      bars: ws.slice(-24).map(x => ({ h: Math.max(4, (x.kg - wmin) / (wmax - wmin) * 100) + '%', title: dfmt(x.t) + ' · ' + this.fmtW(x.kg) })),
+      rows: ws.slice(-4).reverse().map(x => ({ date: dfmt(x.t), v: this.fmtW(x.kg), onDelete: () => this.setData(dd => ({ ...dd, weights: dd.weights.filter(y => y !== x && !(y.t === x.t && y.kg === x.kg)) })) }))
+    };
+
+    // settings
+    const seg = (label, val, opts, fn) => ({ label, opts: opts.map(([k, l], i) => ({ label: l, onClick: () => fn(k), bg: val === k ? 'var(--color-accent)' : 'transparent', color: val === k ? 'var(--color-bg)' : 'var(--color-text)', sep: i ? '1px solid var(--color-divider)' : 'none' })) });
+    const settingsSegs = [
+      seg('Appearance', theme, [['light', 'Light'], ['dark', 'Dark']], k => this.setData(x => ({ ...x, theme: k }))),
+      seg('Weight unit', d.unit, [['kg', 'kg'], ['lb', 'lb']], k => this.setData(x => ({ ...x, unit: k })))
+    ];
+
+    // modal
+    const mo = st.modal, dr = st.draft;
+    let m = { title: '', cancel: 'Cancel' };
+    if (mo) {
+      if (mo.type === 'goal') m = { isGoal: true, title: 'Fast length', cancel: 'Done' };
+      else if (mo.type === 'times') {
+        const err = this.validate(); const s = fromInput(dr.start), e = mo.mode === 'active' ? now : fromInput(dr.end);
+        m = { isTimes: true, hasEnd: mo.mode !== 'active', title: mo.mode === 'active' ? 'Edit start time' : mo.mode === 'new' ? 'Log a past fast' : 'Edit fast', note: err || ('Duration ' + dur(e - s)), noteColor: err ? 'var(--color-accent-800)' : MUTED, primary: 'Save', onPrimary: this.saveTimes, cancel: 'Cancel', secondary: mo.mode === 'fast' ? 'Delete' : mo.mode === 'active' ? 'Discard fast' : null, onSecondary: mo.mode === 'fast' ? this.deleteFast : this.discardActive };
+      } else if (mo.type === 'ended') {
+        const f = d.fasts.find(x => x.id === mo.id) || { start: now, end: now, goalH: 16 }; const met = f.end - f.start >= f.goalH * H;
+        m = { isEnded: true, title: 'Fast complete', endedDur: dur(f.end - f.start), endedNote: (met ? 'You hit your ' : 'Short of your ') + goalName(f.goalH) + ' goal. ' + tfmt(f.start) + ' → ' + tfmt(f.end) + '.', primary: 'Done', onPrimary: this.close, cancel: 'Edit times', secondary: null };
+      } else if (mo.type === 'weight') m = { isWeight: true, title: 'Log weight', weightLabel: 'Weight (' + d.unit + ')', primary: 'Save', onPrimary: this.addWeight };
+      else if (mo.type === 'clear') m = { isText: true, title: 'Clear all data?', text: 'This deletes every fast and weight entry stored for this link on this device. Export first if you want a backup.', primary: 'Clear', onPrimary: () => this.setData(() => ({ fasts: [], weights: [], active: null, goalH: 16, unit: d.unit, theme: d.theme }), { modal: null }) };
+      else if (mo.type === 'text') m = { isText: true, title: mo.title, text: mo.text, cancel: 'OK' };
+    }
+    const closeModal = mo && mo.type === 'ended' ? () => this.editFast(mo.id) : this.close;
+
+    const navC = k => st.tab === k ? 'var(--color-accent-700)' : MUTED;
+    return {
+      theme, offline: st.offline,
+      todayLabel: new Date(now).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }),
+      isFast: st.tab === 'fast', showTimerA: st.tab === 'fast',
+      isCal: st.tab === 'cal', isStats: st.tab === 'stats', isMe: st.tab === 'me',
+      t, presets, stages,
+      openGoal: () => this.open({ type: 'goal' }, { custom: goalH }),
+      mainAction: a ? this.endFast : this.startFast,
+      calTabs, cal, isDay: mode === 'day', isMonth: mode === 'month', isYear: mode === 'year', showLegend: mode !== 'day',
+      calPrev: () => this.calShift(-1), calNext: () => this.calShift(1),
+      dayClock: dayClockEl, dayFasts, dayEmpty: mode === 'day' && dayFasts.length === 0, addPast: this.addPast,
+      weekdays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'], monthCells, yearRows, legend,
+      statCells, recent, recentNote: rec.length ? metN + ' of ' + rec.length + ' hit goal' : '', w,
+      openWeight: () => this.open({ type: 'weight' }, { w: wl ? (d.unit === 'lb' ? (wl.kg * 2.20462).toFixed(1) : wl.kg.toFixed(1)) : '' }),
+      userId: st.u, copyLabel: st.copied ? 'Copied' : 'Copy link', copyLink: this.copyLink, settingsSegs,
+      dataSummary: d.fasts.length + ' fasts, ' + d.weights.length + ' weights',
+      exportData: this.exportData, fileRef: this.fileRef || (this.fileRef = React.createRef()),
+      pickImport: () => this.fileRef && this.fileRef.current && this.fileRef.current.click(), onImport: this.onImport,
+      askClear: () => this.open({ type: 'clear' }),
+      nav: { fast: navC('fast'), cal: navC('cal'), stats: navC('stats'), me: navC('me') },
+      goFast: () => this.setState({ tab: 'fast' }), goCal: () => this.setState({ tab: 'cal', dayT: sod(now) }), goStats: () => this.setState({ tab: 'stats' }), goMe: () => this.setState({ tab: 'me' }),
+      hasModal: !!mo, m, draft: dr, closeModal, stop: e => e.stopPropagation(),
+      onCustom: e => this.setState({ draft: { ...dr, custom: e.target.value } }),
+      applyCustom: () => { const h = parseFloat(dr.custom); if (h >= 1 && h <= 168) this.setGoal(h); },
+      onStart: e => this.setState({ draft: { ...dr, start: e.target.value } }),
+      onEnd: e => this.setState({ draft: { ...dr, end: e.target.value } }),
+      onW: e => this.setState({ draft: { ...dr, w: e.target.value } })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+.settings-screen {
+  padding-bottom: 12px;
+}
+
+.settings-card code {
+  padding: 9px 10px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.settings-label {
+  margin-top: 4px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  font-size: 12px;
+}
+
+.settings-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.settings-actions .danger-action,
+.settings-actions > :only-child {
+  grid-column: 1 / -1;
+}
+
+.danger-action {
+  border-color: var(--color-accent-800);
+  color: var(--color-accent-800);
+}
+
+.settings-links {
+  display: flex;
+  gap: 16px;
+}
+
+.settings-links a,
+.information-back {
+  color: var(--color-accent-700);
+  text-underline-offset: 3px;
+}
+
+.information-page {
+  width: min(100%, 440px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: calc(24px + var(--safe-top)) calc(20px + var(--safe-right)) calc(32px + var(--safe-bottom)) calc(20px + var(--safe-left));
+}
+
+.information-page > h1 {
+  margin: 8px 0 24px;
+  font-family: var(--font-heading);
+  font-size: 32px;
+  text-transform: uppercase;
+}
+
+.information-page section {
+  margin-top: 24px;
+  border-top: 1px solid var(--color-divider);
+}
+
+.information-page h2 {
+  margin: 16px 0 6px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  text-transform: uppercase;
+}
+
+.information-page p {
+  margin: 8px 0;
+  line-height: 1.55;
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nutrition-target-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.nutrition-target-fields .field { margin: 0; }
+
+.settings-card select {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 6px;
+  padding: 0 10px;
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+@media (max-width: 340px) {
+  .nutrition-target-fields { grid-template-columns: 1fr; }
+
+  .settings-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-actions > * {
+    grid-column: 1;
+  }
+}

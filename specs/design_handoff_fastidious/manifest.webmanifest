@@ -1,0 +1,10 @@
+{
+  "name": "Fastidious",
+  "short_name": "Fastidious",
+  "start_url": "./Fastidious.dc.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f2f3",
+  "theme_color": "#f2f2f3",
+  "icons": []
+}

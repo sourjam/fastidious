@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Fastidious maskable icon</title>
+  <desc id="description">A condensed F monogram inside the maskable icon safe zone on a full-bleed steel-blue ground.</desc>
+  <rect width="512" height="512" fill="#5980a6"/>
+  <!-- Every point of the monogram is inside the centered 80% safe-zone circle. -->
+  <path d="M174 112h190v64H238v70h105v62H238v128h-64z" fill="#f2f2f3"/>
+</svg>

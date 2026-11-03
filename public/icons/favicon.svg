@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Fastidious icon</title>
+  <desc id="description">A condensed F monogram with blueprint registration marks on steel blue.</desc>
+  <rect width="512" height="512" fill="#5980a6"/>
+  <g fill="#f2f2f3">
+    <path d="M174 112h190v64H238v70h105v62H238v128h-64z"/>
+  </g>
+  <g stroke="#d6ebff" stroke-width="8" opacity=".72">
+    <path d="M54 78h48M78 54v48M410 78h48M434 54v48M54 434h48M78 410v48M410 434h48M434 410v48"/>
+  </g>
+</svg>

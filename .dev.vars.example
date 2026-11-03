@@ -1,0 +1,7 @@
+# Copy to .dev.vars for local-only Cloudflare secrets.
+# Production values belong in Cloudflare secrets, never in this repository.
+# SECRET_DIGEST_PEPPER=local-development-only-value
+# Generate one P-256 VAPID key pair and keep the private key secret.
+# VAPID_PUBLIC_KEY=base64url-uncompressed-p256-public-key
+# VAPID_PRIVATE_KEY=base64url-32-byte-private-key
+# VAPID_SUBJECT=mailto:operator@example.com
